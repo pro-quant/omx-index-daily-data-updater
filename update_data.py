@@ -74,10 +74,10 @@ new_data.rename(columns=column_mapping, inplace=True)
 # Print final columns before merging
 print("Final renamed columns:", new_data.columns.tolist())
 
-# Ensure 'Date' exists after processing
-if "Date" not in new_data.columns:
-    raise KeyError(f"Error: 'Date' column is missing. Available columns: {
-                   new_data.columns.tolist()}")
+# # Ensure 'Date' exists after processing
+# if "Date" not in new_data.columns:
+#     raise KeyError(f"Error: 'Date' column is missing. Available columns: {
+#                    new_data.columns.tolist()}")
 
 
 # Select relevant columns
