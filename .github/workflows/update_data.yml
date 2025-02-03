@@ -13,7 +13,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: false  # Disable default credentials
+          persist-credentials: false  # Disable default GitHub credentials
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -26,6 +26,10 @@ jobs:
       - name: Run Update Script
         run: python update_data.py
 
+      - name: Authenticate GitHub Remote
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/pro-quant/omx-daily-data-updater.git
+
       - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
@@ -34,8 +38,4 @@ jobs:
           git commit -m "Automated update of OMXS30 data [$(date)]" || exit 0
           git push origin main
         env:
-          GH_PAT: ${{ secrets.GH_PAT }}  # Use your Personal Access Token
-          
-      - name: Authenticate GitHub Remote
-        run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/pro-quant/omx-daily-data-updater.git
+          GH_PAT: ${{ secrets.GH_PAT }}  # Use the secret Personal Access Token (PAT)
