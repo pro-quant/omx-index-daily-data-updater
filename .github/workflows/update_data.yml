@@ -2,18 +2,18 @@ name: Update OMXS30 Data
 
 on:
   schedule:
-    - cron: "0 19 * * *"  # Runs at 20:00 CET (19:00 UTC)
+    - cron: '0 20 * * *'  
   workflow_dispatch:  # Allows manual trigger from GitHub
 
 jobs:
-  update_data:
+  update-data:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: false  # Disable default GitHub credentials
+          persist-credentials: false  #disable default GitHub credentials
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -26,16 +26,12 @@ jobs:
       - name: Run Update Script
         run: python update_data.py
 
-      - name: Authenticate GitHub Remote
-        run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/pro-quant/omx-daily-data-updater.git
-
       - name: Commit and Push Changes
+        env:
+          GH_PAT: ${{ secrets.REPO_PUSH_TOKEN }} 
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add omx30_updated.csv
           git commit -m "Automated update of OMXS30 data [$(date)]" || exit 0
-          git push origin main
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}  # Use the secret Personal Access Token (PAT)
+          git push https://${GH_PAT}@github.com/pro-quant/omx-daily-data-updater.git main
