@@ -79,6 +79,7 @@ if "Date" not in new_data.columns:
     raise KeyError(f"Error: 'Date' column is missing. Available columns: {
                    new_data.columns.tolist()}")
 
+
 # Select relevant columns
 new_data = new_data[["Date", "High", "Close", "Low"]]
 new_data["ID"] = 15055  # Assign the same ID as in your existing dataset
