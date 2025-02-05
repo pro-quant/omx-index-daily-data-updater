@@ -20,7 +20,6 @@ if os.path.exists(existing_file):
     # Get the last recorded date
     last_date = existing_data["Date"].max()
 
-    # Print last recorded date before proceeding
     print(f"Last recorded date in file: {last_date}")
 
     # Define the start date for new data (one day after the last recorded date)
@@ -34,16 +33,12 @@ else:
     raise FileNotFoundError(
         f"File '{existing_file}' not found. Please make sure it exists.")
 
-# Define the Yahoo Finance ticker for OMXS30
 ticker = "^OMX"
-
-# Download new data from Yahoo Finance
+# Download new data
 new_data = yf.download(ticker, start=start_date, end=end_date)
 
-# Print the raw data columns
 print("Raw downloaded columns:", new_data.columns.tolist())
 
-# Check if data was downloaded
 if new_data.empty:
     print("No new data was downloaded. Check the ticker and date range.")
     exit()
@@ -51,27 +46,24 @@ if new_data.empty:
 # Reset index to get 'Date' as a column
 new_data.reset_index(inplace=True)
 
-# Print column names after resetting index
 print("Columns after reset_index:", new_data.columns.tolist())
 
-# Handle MultiIndex issue if necessary
+# Handle MultiIndex issue
 if isinstance(new_data.columns, pd.MultiIndex):
     new_data.columns = ['_'.join(col).strip()
                         for col in new_data.columns.values]
 
-# Print column names after flattening (if applicable)
 print("Columns after flattening:", new_data.columns.tolist())
 
 # Rename columns to match the existing dataset
 column_mapping = {
-    'Date_': 'Date',   # Fix Date column
+    'Date_': 'Date', 
     'Close_^OMX': 'Close',
     'High_^OMX': 'High',
     'Low_^OMX': 'Low'
 }
 new_data.rename(columns=column_mapping, inplace=True)
 
-# Print final columns before merging
 print("Final renamed columns:", new_data.columns.tolist())
 
 # # Ensure 'Date' exists after processing
@@ -82,8 +74,8 @@ print("Final renamed columns:", new_data.columns.tolist())
 
 # Select relevant columns
 new_data = new_data[["Date", "High", "Close", "Low"]]
-new_data["ID"] = 15055  # Assign the same ID as in your existing dataset
-new_data["Name"] = "OMXS30"  # Assign the same index name
+new_data["ID"] = 15055 
+new_data["Name"] = "OMXS30" 
 
 # Reorder columns to match the existing dataset format
 new_data = new_data[["ID", "Name", "Date", "High", "Close", "Low"]]
@@ -101,11 +93,10 @@ print(f"Last recorded date in new data: {new_data['Date'].max()}")
 merged_data = pd.concat([existing_data, new_data]).drop_duplicates(
     subset=["Date"]).reset_index(drop=True)
 
-# Print final DataFrame info for debugging
+# for debugging
 print("Final merged dataset preview:")
 print(merged_data.tail())
 
-# Save the merged dataset to a new file
 merged_data.to_csv(updated_file, sep=";", index=False)
 
 print(f"Updated dataset saved as {updated_file}")
